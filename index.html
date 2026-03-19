@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cannabis Vape Value Calculator | Mood</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: transparent;
+      color: #4A5D53;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== LAYOUT ===== */
+    .widget-wrapper {
+      max-width: 580px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+    .widget-card {
+      background: #FFFFFF;
+      border-radius: 20px;
+      border: 1px solid rgba(27,58,47,0.08);
+      box-shadow: 0 4px 24px rgba(27,58,47,0.06);
+      overflow: hidden;
+    }
+
+    /* ===== HEADER ===== */
+    .widget-header {
+      text-align: center;
+      padding: 28px 24px 20px;
+    }
+    .widget-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 22px;
+      color: #1B3A2F;
+      margin-bottom: 6px;
+    }
+    .widget-header p {
+      font-size: 13px;
+      color: #7A8B82;
+      font-weight: 400;
+    }
+
+    /* ===== SELECTOR SECTION ===== */
+    .selector-section {
+      padding: 0 24px 20px;
+    }
+    .selector-group {
+      margin-bottom: 16px;
+    }
+    .selector-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #7A8B82;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    /* Tab pills */
+    .tab-row {
+      display: flex;
+      gap: 8px;
+    }
+    .tab-pill {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(27,58,47,0.12);
+      background: transparent;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: #4A5D53;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+    .tab-pill:hover {
+      border-color: rgba(27,58,47,0.25);
+      background: rgba(27,58,47,0.03);
+    }
+    .tab-pill.active {
+      background: rgba(27,58,47,0.08);
+      border-color: #1B3A2F;
+      color: #1B3A2F;
+      font-weight: 700;
+    }
+
+    /* Custom price input */
+    .custom-price-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 16px;
+      padding: 0 2px;
+    }
+    .custom-price-row label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #4A5D53;
+      white-space: nowrap;
+    }
+    .price-input-wrap {
+      position: relative;
+      flex: 1;
+      max-width: 120px;
+    }
+    .price-input-wrap span {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: #7A8B82;
+      font-weight: 600;
+    }
+    .price-input {
+      width: 100%;
+      padding: 8px 12px 8px 24px;
+      border-radius: 12px;
+      border: 1px solid rgba(27,58,47,0.15);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1B3A2F;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+    .price-input:focus {
+      border-color: #1B3A2F;
+    }
+    .price-input::placeholder {
+      color: #A0ADA6;
+      font-weight: 400;
+    }
+
+    /* ===== RESULTS SECTION ===== */
+    .results-section {
+      padding: 0 24px 24px;
+    }
+
+    /* Stat cards grid */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .stat-card {
+      background: #F8F6F2;
+      border-radius: 12px;
+      padding: 16px 14px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-1px);
+    }
+    .stat-value {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: #1B3A2F;
+      line-height: 1.2;
+    }
+    .stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #7A8B82;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-top: 4px;
+    }
+
+    /* Value indicator bar */
+    .value-indicator {
+      background: #F8F6F2;
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 12px;
+    }
+    .value-bar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .value-bar-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #7A8B82;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .value-badge {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 10px;
+      transition: all 0.4s ease;
+    }
+    .value-badge.excellent {
+      background: rgba(27,58,47,0.1);
+      color: #1B3A2F;
+    }
+    .value-badge.good {
+      background: rgba(42,92,71,0.1);
+      color: #2A5C47;
+    }
+    .value-badge.moderate {
+      background: rgba(212,160,74,0.15);
+      color: #D4A04A;
+    }
+    .value-badge.premium {
+      background: rgba(166,107,46,0.12);
+      color: #A66B2E;
+    }
+
+    /* Progress bar */
+    .value-bar-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(27,58,47,0.06);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .value-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s ease;
+    }
+
+    /* Detail note */
+    .detail-note {
+      font-size: 12px;
+      color: #A0ADA6;
+      text-align: center;
+      line-height: 1.5;
+      padding-top: 4px;
+    }
+
+    /* ===== MOBILE ===== */
+    @media (max-width: 420px) {
+      .widget-wrapper { padding: 10px; }
+      .widget-header { padding: 22px 16px 16px; }
+      .widget-header h2 { font-size: 19px; }
+      .widget-header p { font-size: 12px; }
+      .selector-section { padding: 0 16px 16px; }
+      .results-section { padding: 0 16px 20px; }
+      .tab-pill { font-size: 13px; padding: 9px 8px; }
+      .stat-value { font-size: 20px; }
+      .stat-card { padding: 12px 10px; }
+      .custom-price-row { flex-wrap: wrap; }
+      .price-input-wrap { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="widget-wrapper">
+  <div class="widget-card">
+
+    <!-- Header -->
+    <div class="widget-header">
+      <h2>Cannabis Vape Value Calculator</h2>
+      <p>Compare per-gram cost across sizes and extract types</p>
+    </div>
+
+    <!-- Selectors -->
+    <div class="selector-section">
+
+      <!-- Device Size -->
+      <div class="selector-group">
+        <span class="selector-label">Device Size</span>
+        <div class="tab-row" id="size-tabs">
+          <button class="tab-pill" data-size="0.5" onclick="selectSize(this)">0.5g</button>
+          <button class="tab-pill active" data-size="1" onclick="selectSize(this)">1g</button>
+          <button class="tab-pill" data-size="2" onclick="selectSize(this)">2g</button>
+        </div>
+      </div>
+
+      <!-- Extract Type -->
+      <div class="selector-group">
+        <span class="selector-label">Extract Type</span>
+        <div class="tab-row" id="extract-tabs">
+          <button class="tab-pill active" data-extract="distillate" onclick="selectExtract(this)">Distillate</button>
+          <button class="tab-pill" data-extract="liveresin" onclick="selectExtract(this)">Live Resin</button>
+        </div>
+      </div>
+
+      <!-- Custom Price -->
+      <div class="custom-price-row">
+        <label for="custom-price">Your price (optional):</label>
+        <div class="price-input-wrap">
+          <span>$</span>
+          <input type="number" id="custom-price" class="price-input" placeholder="e.g. 35" min="1" max="200" step="0.01" oninput="updateResults()">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Results -->
+    <div class="results-section">
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="price-range">$20–$30</div>
+          <div class="stat-label">Typical Price</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="per-gram-cost">$20–$30/g</div>
+          <div class="stat-label">Per-Gram Cost</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="puff-count">300–400</div>
+          <div class="stat-label">Est. Puffs</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="custom-per-gram">—</div>
+          <div class="stat-label">Your $/Gram</div>
+        </div>
+      </div>
+
+      <!-- Value indicator -->
+      <div class="value-indicator">
+        <div class="value-bar-header">
+          <span class="value-bar-title">Value Rating</span>
+          <span class="value-badge excellent" id="value-badge">Good Value</span>
+        </div>
+        <div class="value-bar-track">
+          <div class="value-bar-fill" id="value-bar" style="width: 70%; background: #2A5C47;"></div>
+        </div>
+      </div>
+
+      <div class="detail-note" id="detail-note">
+        1g distillate vapes offer strong value for everyday use.
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ===== DATA ===== */
+  var DATA = {
+    "0.5": {
+      distillate: { priceMin: 15, priceMax: 20, puffMin: 150, puffMax: 200 },
+      liveresin:  { priceMin: 20, priceMax: 28, puffMin: 150, puffMax: 200 }
+    },
+    "1": {
+      distillate: { priceMin: 20, priceMax: 30, puffMin: 300, puffMax: 400 },
+      liveresin:  { priceMin: 30, priceMax: 40, puffMin: 300, puffMax: 400 }
+    },
+    "2": {
+      distillate: { priceMin: 30, priceMax: 45, puffMin: 600, puffMax: 800 },
+      liveresin:  { priceMin: 45, priceMax: 60, puffMin: 600, puffMax: 800 }
+    }
+  };
+
+  var NOTES = {
+    "0.5_distillate": "Half gram distillate vapes are portable but cost more per gram.",
+    "0.5_liveresin":  "Half gram live resin carries a premium per gram at this size.",
+    "1_distillate":   "1g distillate vapes offer strong value for everyday use.",
+    "1_liveresin":    "1g live resin hits the sweet spot between flavor and value.",
+    "2_distillate":   "2g distillate delivers the lowest per-gram cost available.",
+    "2_liveresin":    "2g live resin maximizes flavor and value in one device."
+  };
+
+  var selectedSize = "1";
+  var selectedExtract = "distillate";
+
+  /* ===== TAB SELECTION ===== */
+  function selectSize(btn) {
+    var tabs = document.querySelectorAll("#size-tabs .tab-pill");
+    tabs.forEach(function(t) { t.classList.remove("active"); });
+    btn.classList.add("active");
+    selectedSize = btn.getAttribute("data-size");
+    updateResults();
+  }
+
+  function selectExtract(btn) {
+    var tabs = document.querySelectorAll("#extract-tabs .tab-pill");
+    tabs.forEach(function(t) { t.classList.remove("active"); });
+    btn.classList.add("active");
+    selectedExtract = btn.getAttribute("data-extract");
+    updateResults();
+  }
+
+  /* ===== UPDATE RESULTS ===== */
+  function updateResults() {
+    var d = DATA[selectedSize][selectedExtract];
+    var grams = parseFloat(selectedSize);
+
+    /* Price range */
+    document.getElementById("price-range").textContent = "$" + d.priceMin + "\u2013$" + d.priceMax;
+
+    /* Per-gram cost */
+    var pgMin = (d.priceMin / grams).toFixed(0);
+    var pgMax = (d.priceMax / grams).toFixed(0);
+    document.getElementById("per-gram-cost").textContent = "$" + pgMin + "\u2013$" + pgMax + "/g";
+
+    /* Puff count */
+    document.getElementById("puff-count").textContent = d.puffMin + "\u2013" + d.puffMax;
+
+    /* Custom price */
+    var customInput = document.getElementById("custom-price");
+    var customVal = parseFloat(customInput.value);
+    var customPG = null;
+    if (!isNaN(customVal) && customVal > 0) {
+      customPG = customVal / grams;
+      document.getElementById("custom-per-gram").textContent = "$" + customPG.toFixed(2) + "/g";
+    } else {
+      document.getElementById("custom-per-gram").textContent = "\u2014";
+    }
+
+    /* Value rating */
+    /* Use midpoint per-gram cost or custom if provided */
+    var evalPG = customPG !== null ? customPG : ((d.priceMin + d.priceMax) / 2) / grams;
+
+    var badge = document.getElementById("value-badge");
+    var bar = document.getElementById("value-bar");
+    var pct, label, barColor, badgeClass;
+
+    if (evalPG <= 20) {
+      pct = 95; label = "Excellent Value"; barColor = "#1B3A2F"; badgeClass = "excellent";
+    } else if (evalPG <= 30) {
+      pct = 70; label = "Good Value"; barColor = "#2A5C47"; badgeClass = "good";
+    } else if (evalPG <= 40) {
+      pct = 45; label = "Moderate"; barColor = "#D4A04A"; badgeClass = "moderate";
+    } else {
+      pct = 25; label = "Premium Cost"; barColor = "#A66B2E"; badgeClass = "premium";
+    }
+
+    badge.textContent = label;
+    badge.className = "value-badge " + badgeClass;
+    bar.style.width = pct + "%";
+    bar.style.background = barColor;
+
+    /* Detail note */
+    var noteKey = selectedSize + "_" + selectedExtract;
+    document.getElementById("detail-note").textContent = NOTES[noteKey] || "";
+
+    /* Communicate height to parent iframe */
+    sendHeight();
+  }
+
+  /* ===== IFRAME HEIGHT COMMUNICATION ===== */
+  function sendHeight() {
+    var height = document.querySelector('.widget-wrapper').offsetHeight + 20;
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'resize', height: height }, '*');
+    }
+  }
+
+  /* Initial render */
+  updateResults();
+  window.addEventListener('load', sendHeight);
+  window.addEventListener('resize', sendHeight);
+</script>
+
+</body>
+</html>
